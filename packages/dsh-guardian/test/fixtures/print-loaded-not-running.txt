@@ -1,0 +1,63 @@
+gui/501/com.deepseek.dsh-guardian = {
+	active count = 0
+	path = /Users/apple/Library/LaunchAgents/com.deepseek.dsh-guardian.plist
+	type = LaunchAgent
+	state = not running
+
+	program = /bin/bash
+	arguments = {
+		/bin/bash
+		/Users/apple/.deepseek-harness/bin/dsh-guardian.sh
+		scan
+	}
+
+	stdout path = /Users/apple/Library/Logs/deepseek-dsh/guardian.out.log
+	stderr path = /Users/apple/Library/Logs/deepseek-dsh/guardian.err.log
+	inherited environment = {
+		SSH_AUTH_SOCK => /var/run/com.apple.launchd.g1earY4AKi/Listeners
+	}
+
+	default environment = {
+		PATH => /usr/bin:/bin:/usr/sbin:/sbin
+	}
+
+	environment = {
+		OSLogRateLimit => 64
+		HOME => /Users/apple
+		XPC_SERVICE_NAME => com.deepseek.dsh-guardian
+	}
+
+	domain = gui/501 [100016]
+	asid = 100016
+	minimum runtime = 10
+	exit timeout = 5
+	runs = 47
+	last exit code = 0
+
+	resource coalition = {
+		ID = 7602
+		type = resource
+		state = active
+		active count = 1
+		name = com.deepseek.dsh-guardian
+	}
+
+	jetsam coalition = {
+		ID = 7603
+		type = jetsam
+		state = active
+		active count = 1
+		name = com.deepseek.dsh-guardian
+	}
+
+	spawn type = background (5)
+	jetsam priority = 40
+	jetsam memory limit (active) = (unlimited)
+	jetsam memory limit (inactive) = (unlimited)
+	jetsamproperties category = daemon
+	jetsam thread limit = 32
+	cpumon = default
+	run interval = 600 seconds
+
+	properties = runatload | inferred program
+}

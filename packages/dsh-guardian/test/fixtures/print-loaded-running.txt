@@ -1,0 +1,32 @@
+gui/501/com.deepseek.dsh-guardian = {
+	active count = 1
+	path = /Users/apple/Library/LaunchAgents/com.deepseek.dsh-guardian.plist
+	type = LaunchAgent
+	state = running
+
+	program = /bin/bash
+	arguments = {
+		/bin/bash
+		/Users/apple/.deepseek-harness/bin/dsh-guardian.sh
+		scan
+	}
+
+	pid = 12345
+
+	domain = gui/501 [100016]
+	asid = 100016
+	minimum runtime = 10
+	exit timeout = 5
+	runs = 48
+	last exit code = 0
+
+	resource coalition = {
+		ID = 7602
+		type = resource
+		state = active
+		active count = 1
+		name = com.deepseek.dsh-guardian
+	}
+
+	properties = runatload | inferred program
+}

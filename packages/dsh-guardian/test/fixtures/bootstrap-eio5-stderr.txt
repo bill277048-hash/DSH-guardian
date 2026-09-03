@@ -1,0 +1,2 @@
+Bootstrap failed: 5: Input/output error
+Try re-running the command as root for richer errors.

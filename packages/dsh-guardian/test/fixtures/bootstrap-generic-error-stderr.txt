@@ -1,0 +1,2 @@
+Bootstrap failed: 125: Domain does not support specified action
+Try re-running the command as root for richer errors.

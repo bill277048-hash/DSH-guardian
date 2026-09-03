@@ -8,5 +8,5 @@ description:
   en: 'WebUI panel for the dsh-guardian watchdog: start, stop and inspect two macOS LaunchAgents with status, log tail and explicit failure states.'
   zh: 'dsh-guardian 守护程序面板：在 dsh WebUI 中启动、停止并查看两个 macOS LaunchAgent 的状态、日志尾行与明确的失败提示。'
 
-# 可选：GitHub Release 钉版 tarball（建好 Release 后启用，务必钉 tag 而非 latest）
-# tarball: https://github.com/bill277048-hash/DSH-guardian/releases/download/v1.0.0/botton-dsh-guardian-1.0.0.tgz
+# GitHub Release 钉版 tarball（已建 v1.0.0 并上传资产，钉 tag 而非 latest）
+tarball: https://github.com/bill277048-hash/DSH-guardian/releases/download/v1.0.0/botton-dsh-guardian-1.0.0.tgz

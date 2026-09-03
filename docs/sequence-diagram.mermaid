@@ -1,0 +1,54 @@
+sequenceDiagram
+    autonumber
+    participant U as 用户(WebUI)
+    participant P as GuardianPanel(client.js)
+    participant R as Routes(host)
+    participant S as GuardianService
+    participant M as AsyncMutex
+    participant L as LaunchctlRunner
+    participant LC as launchctl(系统)
+    participant G as guardian状态文件/日志
+
+    Note over U,G: ——— 状态查看（无锁） ———
+    U->>P: 打开插件页 / 点击刷新
+    P->>R: GET /api/guardian/status
+    R->>S: status()
+    S->>L: print(两个label)
+    L->>LC: launchctl print gui/<uid>/<label>
+    LC-->>L: 记录文本 / "Could not find service"
+    L-->>S: JobStatus×2 (parsePrint)
+    S->>G: 读 .fails / backups计数 / log tail
+    G-->>S: extras
+    S-->>R: StatusResponse(overall聚合)
+    R-->>P: 200 JSON
+    P-->>U: 渲染状态卡片
+
+    Note over U,G: ——— 启动（互斥） ———
+    U->>P: 点击「启动」
+    P->>P: 禁用按钮
+    P->>R: POST /api/guardian/start
+    R->>S: start()
+    S->>M: acquire()
+    alt 锁被占用
+        M-->>S: null
+        S-->>R: {code: BUSY}
+        R-->>P: 409
+    else 获得锁
+        M-->>S: release
+        S->>L: print(两个label) 预探测
+        L->>LC: launchctl print
+        LC-->>L: 均已加载
+        L-->>S: loaded×2
+        S-->>R: {code: ALREADY_RUNNING}（不发bootstrap）
+    end
+    Note over S,LC: 未加载分支：对缺失plist逐个 bootstrap<br/>EIO5→视为已加载(竞态容忍)；其他非零→START_FAILED<br/>完成后 print 复验 → OK / START_VERIFY_FAILED
+    R-->>P: 200/500 ActionResponse
+    P->>P: 按code着色显示message，恢复按钮，自动再拉一次status
+
+    Note over U,G: ——— 停止（互斥，镜像逻辑） ———
+    U->>P: 点击「停止」
+    P->>R: POST /api/guardian/stop
+    R->>S: stop() → M.acquire() → print预探测
+    Note over S,LC: 双未加载→NOT_RUNNING（不发bootout）<br/>对已加载label逐个 bootout<br/>"No such process"/"Could not find service"→视为已停止<br/>其他非零→STOP_FAILED；复验仍可打印→STOP_VERIFY_FAILED
+    R-->>P: ActionResponse
+    P-->>U: 中文反馈 + 状态刷新

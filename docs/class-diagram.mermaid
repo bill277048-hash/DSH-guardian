@@ -1,0 +1,54 @@
+classDiagram
+    class GuardianPlugin {
+        +name: string = "web-ui-guardian"
+        +inject: string[] = ["webServer"]
+        +apply(ctx, config) void
+    }
+    class Routes {
+        +makeGuardianRoutes(service) Route[]
+        -isTrustedRequest(req) boolean
+        -writeJson(res, status, body) void
+    }
+    class GuardianService {
+        -runner: LaunchctlRunner
+        -aggregator: StatusAggregator
+        -mutex: AsyncMutex
+        +start() Promise~ActionResponse~
+        +stop() Promise~ActionResponse~
+        +status() Promise~StatusResponse~
+    }
+    class LaunchctlRunner {
+        -exec: ExecFn
+        -uid: number
+        +bootstrap(plistPath) Promise~CmdResult~
+        +bootout(plistPath) Promise~CmdResult~
+        +print(label) Promise~PrintResult~
+        +classifyBootstrapError(stderr) ErrorCode
+        +classifyBootoutError(stderr) ErrorCode
+        +parsePrint(stdout) JobStatus
+    }
+    class StatusAggregator {
+        -guardDir: string
+        -logFile: string
+        +aggregate(jobs) Promise~GuardianExtras~
+        -readFails() Promise~number~
+        -countBackups() Promise~number~
+        -tailLog(n) Promise~string[]~
+    }
+    class AsyncMutex {
+        -tail: Promise
+        +acquire() Promise~ReleaseFn|null~
+    }
+    class GuardianPanel {
+        <<client React组件>>
+        +refresh() void
+        +onStart() void
+        +onStop() void
+    }
+
+    GuardianPlugin --> Routes : 注册
+    Routes --> GuardianService : 调用
+    GuardianService --> LaunchctlRunner : launchctl 操作
+    GuardianService --> StatusAggregator : 聚合状态
+    GuardianService --> AsyncMutex : start/stop 互斥
+    GuardianPanel ..> Routes : fetch /api/guardian/*

@@ -34,7 +34,9 @@
     "README.md",
     "README.zh.md",
     "CHANGELOG.md",
-    "LICENSE"
+    "LICENSE",
+    "screenshots.json",
+    "assets"
   ],
   "keywords": [
     "dsh",

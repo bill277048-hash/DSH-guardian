@@ -21,6 +21,10 @@ import { makeGuardianRoutes } from "./routes.js";
 
 const PACKAGE_NAME = "@botton/dsh-guardian";
 
+/** 平台门控：launchctl/launchd 仅 macOS 可用；非 darwin 时面板/API 返回提示，不执行 launchctl。 */
+const IS_MACOS = process.platform === "darwin";
+const UNSUPPORTED_MESSAGE = "守护管理仅支持 macOS（launchd）；当前系统非 macOS，dsh 无 launchd 守护可管，本面板不可用。";
+
 /** bootout 复验等待：launchd 移除记录有毫秒级延迟，避免误报 STOP_VERIFY_FAILED。 */
 const BOOTOUT_VERIFY_DELAY_MS = 300;
 
@@ -95,6 +99,17 @@ export class GuardianService {
    * @returns {Promise<object>} StatusResponse
    */
   async status() {
+    if (!IS_MACOS) {
+      return {
+        ok: false,
+        overall: "unsupported",
+        code: "UNSUPPORTED_PLATFORM",
+        message: UNSUPPORTED_MESSAGE,
+        jobs: [],
+        guardian: { fails: 0, backupCount: 0, lastLogLines: [] },
+        checkedAt: new Date().toISOString(),
+      };
+    }
     const jobs = await this.probeAll();
     const loadedCount = jobs.filter((job) => job.loaded).length;
     const overall =
@@ -118,6 +133,9 @@ export class GuardianService {
    * @returns {Promise<object>} ActionResponse
    */
   async start() {
+    if (!IS_MACOS) {
+      return { ok: false, action: "start", code: "UNSUPPORTED_PLATFORM", message: UNSUPPORTED_MESSAGE, jobs: [] };
+    }
     const release = await this.mutex.acquire();
     if (!release) return this.busy("start");
     try {
@@ -157,6 +175,9 @@ export class GuardianService {
    * @returns {Promise<object>} ActionResponse
    */
   async stop() {
+    if (!IS_MACOS) {
+      return { ok: false, action: "stop", code: "UNSUPPORTED_PLATFORM", message: UNSUPPORTED_MESSAGE, jobs: [] };
+    }
     const release = await this.mutex.acquire();
     if (!release) return this.busy("stop");
     try {

@@ -39,7 +39,7 @@ window.__ModuleLoader__.load({
     function feedbackColor(code) {
       if (code === "OK") return "#1a7f37";
       if (code === "ALREADY_RUNNING" || code === "NOT_RUNNING") return "#9a6700";
-      if (code === "BUSY") return "#6e7781";
+      if (code === "BUSY" || code === "UNSUPPORTED_PLATFORM") return "#6e7781";
       return "#cf222e";
     }
 
@@ -48,6 +48,7 @@ window.__ModuleLoader__.load({
       if (overall === "active") return { text: "运行中", color: "#1a7f37", bg: "#dafbe1" };
       if (overall === "partial") return { text: "部分运行（异常）", color: "#cf222e", bg: "#ffebe9" };
       if (overall === "stopped") return { text: "已停止", color: "#6e7781", bg: "#eaeef2" };
+      if (overall === "unsupported") return { text: "仅支持 macOS", color: "#6e7781", bg: "#eaeef2" };
       return { text: "查询中…", color: "#6e7781", bg: "#eaeef2" };
     }
 
@@ -247,6 +248,10 @@ window.__ModuleLoader__.load({
       // partial 异常提示（架构 §4 #9）
       if (status && status.overall === "partial" && status.message) {
         children.push(h("div", { key: "partial", style: { color: "#cf222e", marginBottom: "8px" } }, status.message));
+      }
+      // 非 macOS 平台提示（launchd 守护仅 macOS 可用）
+      if (status && status.overall === "unsupported" && status.message) {
+        children.push(h("div", { key: "unsupported", style: { color: "#6e7781", marginBottom: "8px" } }, status.message));
       }
 
       // guardian 扩展状态（.fails / backups / 日志尾部）

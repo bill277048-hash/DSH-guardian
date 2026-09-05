@@ -81,6 +81,7 @@ export function httpStatusFor(code) {
     case "OK":
     case "ALREADY_RUNNING":
     case "NOT_RUNNING":
+    case "UNSUPPORTED_PLATFORM":
       return 200;
     case "BUSY":
       return 409;

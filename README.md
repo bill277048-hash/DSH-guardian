@@ -18,7 +18,7 @@ dsh-guardian 是一组守护 DeepSeek Harness（dsh）的 LaunchAgent 巡检脚�
 | ✅ 只封装 | 启停走系统 `launchctl`，与终端命令完全等价，两者可随时混用 |
 | ✅ 不改造 | 守护脚本、两个 plist 一行不动；绝不碰 dsh 主服务 |
 
-## 工作原理（30 秒版）
+## 工作原理
 
 ```
 浏览器面板(client.js)  ──fetch──▶  dsh webServer 路由 /api/guardian/*

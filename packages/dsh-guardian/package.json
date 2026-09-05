@@ -13,6 +13,14 @@
     "./client": "./client.js",
     "./package.json": "./package.json"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bill277048-hash/DSH-guardian.git"
+  },
+  "homepage": "https://github.com/bill277048-hash/DSH-guardian#readme",
+  "bugs": {
+    "url": "https://github.com/bill277048-hash/DSH-guardian/issues"
+  },
   "dsh": {
     "engines": {
       "dsh": ">=0.1.1-rc.1"
